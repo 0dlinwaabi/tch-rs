@@ -249,6 +249,10 @@ extern "C" {
     ) -> *mut CIValue;
 
     pub fn ati_object_getattr_(arg: *mut CIValue, attr_name: *const c_char) -> *mut CIValue;
+    pub fn ati_object_type_name_(arg: *mut CIValue) -> *mut c_char;
+    pub fn ati_object_attribute_names_(
+        arg: *mut CIValue,
+    ) -> *mut CIValue;
 
     pub fn atm_load(filename: *const c_char) -> *mut CModule_;
     pub fn atm_load_on_device(filename: *const c_char, device: c_int) -> *mut CModule_;

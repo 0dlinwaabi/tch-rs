@@ -751,6 +751,41 @@ impl Object {
         }
         IValue::of_c(c_ivalue)
     }
+
+    pub fn get_type_name(&self) -> Result<String, TchError> {
+        let mut ptr = unsafe_torch_err!(ati_object_type_name_(self.c_ivalue));
+        match unsafe { ptr_to_string(ptr) } {
+            None => Err(TchError::Kind("nullptr representation".to_string())),
+            Some(s) => Ok(s),
+        }
+    }
+
+    pub fn attribute_names(&self) -> Result<Vec<String>, TchError> {
+        let c_ivalue = unsafe_torch_err!(ati_object_attribute_names_(self.c_ivalue));
+
+        if c_ivalue.is_null() {
+            return Err(TchError::Torch(format!(
+                "Object.attribute_names returned CIValue nullptr",
+            )));
+        }
+
+        match IValue::of_c(c_ivalue)? {
+            IValue::GenericList(ivalue_list) => {
+                let str_list: Result<Vec<String>, TchError> = ivalue_list
+                    .into_iter()
+                    .map(|e| match e {
+                        IValue::String(s) => Ok(s),
+                        v => Err(TchError::Torch(format!(
+                            "Expecting IValue::String but got {:?}",
+                            v
+                        ))),
+                    })
+                    .collect();
+                str_list
+            }
+            v => Err(TchError::Torch(format!("Expecting IValue::StringList but got {:?}", v))),
+        }
+    }
 }
 
 impl Drop for Object {

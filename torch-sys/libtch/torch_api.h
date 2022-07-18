@@ -216,6 +216,9 @@ int ati_tag(ivalue);
 ivalue ati_object_method_(ivalue i, char *method_name, ivalue *ivalues, int nivalues);
 ivalue ati_object_getattr_(ivalue i, char *attr_name);
 
+char *ati_object_type_name_(ivalue i);
+ivalue ati_object_attribute_names_(ivalue i);
+
 ivalue ati_clone(ivalue);
 void ati_free(ivalue);
 

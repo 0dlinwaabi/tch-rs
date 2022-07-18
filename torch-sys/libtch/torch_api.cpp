@@ -1416,6 +1416,25 @@ ivalue ati_object_getattr_(ivalue i, char *attr_name) {
   return nullptr;
 }
 
+char * ati_object_type_name_(ivalue i) {
+  PROTECT(
+    auto name_str = i->toObjectRef().type()->name()->qualifiedName();
+    return strdup(name_str.c_str());
+  )
+  return nullptr;
+}
+
+ivalue ati_object_attribute_names_(ivalue i) {
+  PROTECT (
+    c10::List<string> vec;
+    auto classType = i->toObjectRef().type();
+    const auto numAttrs = classType->numAttributes();
+    for (const auto slot : c10::irange(numAttrs)) vec.push_back(classType->getAttributeName(slot));
+    return new torch::jit::IValue(vec);
+  )
+  return nullptr;
+}
+
 ivalue ati_clone(ivalue i) {
   PROTECT(
     return new torch::jit::IValue(*i);
